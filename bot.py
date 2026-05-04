@@ -25,7 +25,7 @@ def get_all_idx_stocks():
         "BNLI", "BPPT", "BRAU", "BRPT", "BSDE", "BTEL", "BULL", "BUMI", "CAKK", "CASS",
         "CENT", "CITA", "CMNP", "CMPP", "CMTX", "CNKO", "CNMA", "CPIN", "CTRA", "CTRS",
         "DADA", "DART", "DBIT", "DBRK", "DCII", "DEHP", "DEWA", "DEXA", "DFAM", "DGIK",
-        "DGIN", "DHPP", "DIDI", "DISK", "DIVA", "DKFT", "DOID", "DPLM", "DSSA",
+        "DGIN", "DHPP", "DIDI", "DISK", "DIVA", "DKFT", "DPLM", "DSSA",
         "DUTI", "DVLA", "DWGL", "ECII", "ECIP", "EDDY", "EKAD", "ELKO", "ELSA", "ELTY",
         "EMTK", "ENRG", "ENSO", "ENVY", "EPMT", "EPRO", "ERAA", "ERTX", "ESIP", "ESSA",
         "ESSM", "ESTL", "ETIC", "EULN", "EVAN", "EXCL", "EXIM", "EXIT", "EXTB", "FAPA",
@@ -39,45 +39,31 @@ def get_all_idx_stocks():
         "GPSO", "GRAI", "GRAN", "GRHA", "GRIM", "GRNQ", "GRSI", "GRYA", "GSMF",
         "GTBO", "GTMA", "GTSI", "GTSM", "GTTS", "GUHA", "GUID", "GUNA", "GUNP", "GUST",
         "HAKA", "HAKT", "HALF", "HALO", "HALT", "HAMA", "HAMR", "HAND", "HANG", "HAPI",
-        "HAPS", "HARD", "HARE", "HARK", "HARM", "HARN", "HARP", "HARS", "HART", "HARW",
-        "HARY", "HASC", "HASH", "HASL", "HASS", "HAST", "HATE", "HATT", "HAUL", "HAUS",
-        "HEXA", "HEXM", "HIBA", "HIBB", "HIBE", "HIBF", "HIBG", "HIBH", "HIBI", "HIBJ",
-        "HIBK", "HIBL", "HIBM", "HIBN", "HIBO", "HIBP", "HIDU", "HIGH", "HIKE", "HIKU",
-        "HIMA", "HIMB", "HIMC", "HIMD", "HIME", "HIMF", "HIMG", "HIMH", "HIMI", "HIMJ",
-        "HIMK", "HIML", "HIMM", "HIMN", "HIMO", "HIMS", "HIMU", "HIMV", "HIMW", "HIMX",
-        "HIMY", "HIMZ", "HINA", "HINB", "HINC", "HIND", "HINE", "HING", "HINI", "HINK",
-        "HINL", "HINM", "HINN", "HINO", "HINP", "HINS", "HINT", "HINU", "HINV", "HINW",
-        "HINX", "HINY", "HINZ", "HIPA", "HIPC", "HIPD", "HIPE", "HIPF", "HIPG", "HIPH",
-        "HIPI", "HIPJ", "HIPK", "HIPL", "HIPM", "HIPN", "HIPO", "HIPP", "HIPS", "HIPT",
-        "HIPU", "HIPV", "HIPW", "HIPX", "HIPY", "HIPZ", "HITA", "HITB", "HITC", "HITD",
-        "HITE", "HITF", "HITG", "HITH", "HITI", "HITJ", "HITK", "HITL", "HITM", "HITN",
-        "HITO", "HITP", "HITS", "HITT", "HITU", "HITV", "HITW", "HITX", "HITY", "HITZ",
         "INAF", "INAI", "INAP", "INCA", "INCF", "INCO", "INDF", "INDI", "INDX", "INDY",
         "INET", "INFA", "INFO", "INGA", "INGF", "INGH", "INGI", "INGP", "INGR", "INGS",
-        "INGT", "INGU", "INIC", "INID", "INIE", "INIF", "INIG", "INIH", "INII", "INIJ",
-        "INIK", "INIL", "INIM", "ININ", "INIO", "INIP", "INIS", "INIT", "INIU", "INIV",
-        "INIW", "INIX", "INIY", "INIZ", "INJF", "INJG", "INJH", "INJI", "INJJ", "INJK",
-        "INJL", "INJM", "INJN", "INJO", "INJP", "INJS", "INJT", "INJU", "INJV", "INJW",
-        "INJX", "INJY", "INJZ", "INKF", "INKG", "INKH", "INKI", "INKJ", "INKK", "INKL",
-        "INKM", "INKN", "INKO", "INKP", "INKS", "INKT", "INKU", "INKV", "INKW", "INKX",
-        "INKY", "INKZ", "INLF", "INLG", "INLH", "INLI", "INLJ", "INLK", "INLL", "INLM",
-        "INLN", "INLO", "INLP", "INLS", "INLT", "INLU", "INLV", "INLW", "INLX", "INLY",
-        "INLZ", "INMF", "INMG", "INMH", "INMI", "INMJ", "INMK", "INML", "INMM", "INMN",
-        "INMO", "INMP", "INMS", "INMT", "INMU", "INMV", "INMW", "INMX", "INMY", "INMZ",
-        "INNF", "INNG", "INNH", "INNI", "INNJ", "INNK", "INNL", "INNM", "INNN", "INNO",
-        "INNP", "INNS", "INNT", "INNU", "INNV", "INNW", "INNX", "INNY", "INNZ", "INOF",
-        "INOG", "INOH", "INOI", "INOJ", "INOK", "INOL", "INOM", "INON", "INOO", "INOP",
-        "INOS", "INOT", "INOU", "INOV", "INOW", "INOX", "INOY", "INOZ", "INPF", "INPG",
-        "INPH", "INPI", "INPJ", "INPK", "INPL", "INPM", "INPN", "INPO", "INPP", "INPS",
-        "INPT", "INPU", "INPV", "INPW", "INPX", "INPY", "INPZ", "IOAF", "IOAG", "IOAH",
-        "IOAI", "IOAJ", "IOAK", "IOAL", "IOAM", "IOAN", "IOAO", "IOAP", "IOAS", "IOAT",
-        "IOAU", "IOAV", "IOAW", "IOAX", "IOAY", "IOAZ", "IOBAL", "IOBF", "IOBG", "IOBH",
-        "IOBI", "IOBJ", "IOBK", "IOBL", "IOBM", "IOBN", "IOBO", "IOBP", "IOBS", "IOBT",
-        "IOBU", "IOBV", "IOBW", "IOBX", "IOBY", "IOBZ", "IORAA", "IORAF", "IORAG", "IORAH",
-        "IORAI", "IORAJ", "IORAH", "IORAL", "IORAM", "IORAN", "IORAO", "IORAP", "IORAS", "IORAT",
-        "IORAU", "IORAV", "IORAW", "IORAX", "IORAY", "IORAZ", "IORBF", "IORBG", "IORBH",
-        "JORBI", "IORBJ", "IORBK", "IORBL", "IORBM", "IORBN", "IORBO", "IORBP", "IORBS",
-        "IORBT", "IORBU", "IORBV", "IORBW", "IORBX", "IORBY", "IORBZ", "JROI", "PROL",
+        "JPFA", "JRPT", "KAEF", "KAIR", "KKGI", "KLBF", "KMTR", "KOBX", "KOIN", "LPKR",
+        "LPPF", "LSIP", "LTCM", "LTLN", "MAIN", "MAPC", "MAPA", "MAPB", "MAPS", "MARA",
+        "MARK", "MAUN", "MAYA", "MBSS", "MCAS", "MCOL", "MCPP", "MCSM", "MDKA", "MDLN",
+        "MDRN", "MEDC", "MEDH", "MEKA", "MELI", "MERK", "MFIN", "MGRO", "MIFA", "MIFX",
+        "MIKA", "MIKB", "MIKC", "MIKD", "MIKE", "MIKI", "MIKJ", "MIKK", "MIKL", "MIKM",
+        "MIKN", "MIKO", "MIKP", "MIKS", "MIKT", "MIKU", "MIKV", "MIKW", "MIKX", "MIKY",
+        "MIKZ", "MINA", "MINB", "MINC", "MIND", "MINE", "MINF", "MING", "MINH", "MINI",
+        "MINJ", "MINK", "MINL", "MINM", "MINN", "MINO", "MINP", "MINS", "MINT", "MINU",
+        "MINV", "MINW", "MINX", "MINY", "MINZ", "MIPA", "MIPB", "MIPC", "MIPD", "MIPE",
+        "MIPF", "MIPG", "MIPH", "MIPI", "MIPJ", "MIPK", "MIPL", "MIPM", "MIPN", "MIPO",
+        "MIPP", "MIPS", "MIPT", "MIPU", "MIPV", "MIPW", "MIPX", "MIPY", "MIPZ", "MIRB",
+        "MITA", "MITB", "MITC", "MITD", "MITE", "MITF", "MITG", "MITH", "MITI", "MITJ",
+        "MITK", "MITL", "MITM", "MITN", "MITO", "MITP", "MITS", "MITT", "MITU", "MITV",
+        "MITW", "MITX", "MITY", "MITZ", "MKPI", "MKWS", "MLPL", "MMLP", "MNEG", "MNIK",
+        "MNSE", "MOIL", "MOLI", "MONK", "MONS", "MOPC", "MOPI", "MORO", "MORR", "MOST",
+        "MOTB", "MOTI", "MOTO", "MOTP", "MOTS", "MOTT", "MOTU", "MOTV", "MOTW", "MOTX",
+        "MOTY", "MOTZ", "MOVE", "MOWS", "MOXC", "MOXD", "MOXA", "MOXB", "MOXI", "MOXP",
+        "MOXX", "MOYE", "MOYO", "MOYP", "MOYS", "MOYT", "MOYU", "MOYV", "MOYW", "MOYX",
+        "MOYY", "MOYZ", "MPRO", "MRAT", "MRLN", "MRNA", "MRNY", "MROR", "MRSA", "MRSD",
+        "MRSE", "MRSF", "MRSG", "MRSH", "MRSI", "MRSJ", "MRSK", "MRSL", "MRSM", "MRSN",
+        "MRSO", "MRSP", "MRSS", "MRST", "MRSU", "MRSV", "MRSW", "MRSX", "MRSY", "MRSZ",
+        "MTDL", "MTEM", "MTFB", "MTFP", "MTLC", "MTLA", "MTLN", "MTLP", "MTLS", "MTLT",
+        "MTLU", "MTLV", "MTLW", "MTLX", "MTLY", "MTLZ", "MTOM", "MTPS", "MTTR", "MTSM",
     ]
     
     # Try to get dari CSV
@@ -97,8 +83,11 @@ def get_all_idx_stocks():
 # =========================
 # SCAN LOGIC
 # =========================
-def scan_market():
+def scan_market(limit=None):
     stocks = get_all_idx_stocks()
+    if limit:
+        stocks = stocks[:limit]
+    
     results = []
     
     print(f"\n{'='*60}")
@@ -223,6 +212,16 @@ async def scan_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = scan_market()
     await update.message.reply_text(result)
 
+async def test_sample(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("⏳ Test 5 saham...\n⏱️ Tunggu sebentar")
+    result = scan_market(limit=5)
+    await update.message.reply_text(result)
+
+async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔍 Debug mode: Checking data...\n⏱️ Tunggu 1-2 menit")
+    result = scan_market()
+    await update.message.reply_text(result)
+
 # =========================
 # AUTO SCAN (09:00)
 # =========================
@@ -256,6 +255,8 @@ def main():
     app.add_handler(CommandHandler("status", status))
     app.add_handler(CommandHandler("test", test))
     app.add_handler(CommandHandler("scan", scan_now))
+    app.add_handler(CommandHandler("test_sample", test_sample))
+    app.add_handler(CommandHandler("debug", debug))
 
     # schedule jam 9 pagi
     app.job_queue.run_daily(auto_scan, time=datetime_time(hour=9, minute=0))
