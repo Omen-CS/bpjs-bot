@@ -1,12 +1,10 @@
-import yfinance as yf
-import pandas as pd
 import requests
-from io import StringIO
+import pandas as pd
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from datetime import time as datetime_time
 import os
 import time
-from datetime import time
 import asyncio
 
 # =========================
@@ -23,14 +21,42 @@ def get_all_idx_stocks():
 
     try:
         res = requests.get(url, headers=headers, timeout=10)
-        df = pd.read_csv(StringIO(res.text))
+        df = pd.read_csv(res.text)
         symbols = df['Kode Saham'].dropna().tolist()
-        return [f"{s}.JK" for s in symbols if isinstance(s, str)]
-    except:
-        return ["BBRI.JK", "BBCA.JK", "TLKM.JK"]
+        return [s.strip() for s in symbols if isinstance(s, str)]
+    except Exception as e:
+        print(f"Error getting IDX stocks: {e}")
+        return ["BBRI", "BBCA", "TLKM"]
 
 # =========================
-# SCAN LOGIC
+# GET DATA FROM STOCKBIT
+# =========================
+def get_stockbit_data(symbol):
+    """Ambil data dari Stockbit API"""
+    try:
+        url = f"https://stockbit.com/api/v2/stock/{symbol}"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except Exception as e:
+        print(f"Error fetching {symbol} from Stockbit: {e}")
+        return None
+
+def get_stockbit_technical(symbol):
+    """Ambil data technical dari Stockbit"""
+    try:
+        url = f"https://stockbit.com/api/v2/stock/{symbol}/technical"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except Exception as e:
+        print(f"Error fetching technical {symbol}: {e}")
+        return None
+
+# =========================
+# SCAN LOGIC (STOCKBIT)
 # =========================
 def scan_market():
     stocks = get_all_idx_stocks()
@@ -38,47 +64,51 @@ def scan_market():
 
     for symbol in stocks:
         try:
-            data = yf.download(symbol, period="30d", interval="1d", progress=False)
-
-            if len(data) < 5:
+            # Get basic data
+            data = get_stockbit_data(symbol)
+            if not data:
                 continue
 
-            latest = data.iloc[-1]
-            prev = data.iloc[-2]
+            # Get technical data
+            tech = get_stockbit_technical(symbol)
 
-            change_pct = ((latest['Close'] - prev['Close']) / prev['Close']) * 100
-            ma20 = data['Close'].rolling(20).mean().iloc[-1]
-            vol_ma20 = data['Volume'].rolling(20).mean().iloc[-1]
-
-            volume = latest['Volume']
-            value = latest['Close'] * volume
-            high = latest['High']
-            close = latest['Close']
-
-            if high == 0:
+            # Extract data
+            price = data.get('price', {})
+            change_pct = price.get('change', 0)
+            current_price = price.get('current', 0)
+            
+            if current_price == 0:
                 continue
 
-            close_position = close / high
+            volume = data.get('volume', 0)
+            market_cap = data.get('market_cap', 0)
+
+            # Get technical indicators
+            ma20 = None
+            rsi = None
+            if tech:
+                indicators = tech.get('indicators', {})
+                ma20 = indicators.get('ma20')
+                rsi = indicators.get('rsi')
 
             score = 0
 
+            # Score calculation
             if 1 <= change_pct <= 4:
                 score += 2
             elif change_pct > 5:
                 score -= 2
 
-            if close > ma20:
+            if ma20 and current_price > ma20:
                 score += 1
 
-            if volume > vol_ma20 * 2:
-                score += 2
-            elif volume > vol_ma20 * 1.5:
+            if volume > 0:
                 score += 1
 
-            if value > 3_000_000:
+            if market_cap > 3_000_000_000:  # 3 miliar
                 score += 1
 
-            if close_position >= 0.8:
+            if rsi and 40 <= rsi <= 70:
                 score += 2
 
             if score < 0:
@@ -90,25 +120,27 @@ def scan_market():
                 "symbol": symbol,
                 "score": score,
                 "change": round(change_pct, 2),
-                "volume_ratio": round(volume / vol_ma20, 2),
+                "price": round(current_price, 2),
                 "label": label
             })
 
-            time.sleep(0.2)
+            time.sleep(0.3)
 
-        except:
+        except Exception as e:
+            print(f"Error scanning {symbol}: {e}")
             continue
 
     results = sorted(results, key=lambda x: x['score'], reverse=True)
 
-    message = "📊 BPJS ALL MARKET\n\n"
+    message = "📊 BPJS ALL MARKET\n"
+    message += f"Waktu: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}\n\n"
 
     if len(results) == 0:
         message += "❌ Ga ada saham valid hari ini"
     else:
         for r in results[:7]:
             message += f"{r['label']} {r['symbol']}\n"
-            message += f"{r['change']}% | Vol {r['volume_ratio']}x\n\n"
+            message += f"Rp {r['price']} | {r['change']}%\n\n"
 
     return message
 
@@ -148,10 +180,14 @@ async def auto_scan(context: ContextTypes.DEFAULT_TYPE):
 
     chat_id = os.getenv("CHAT_ID")
 
-    await context.bot.send_message(chat_id=chat_id, text="🤖 Auto scan mulai...")
-    result = scan_market()
-    await context.bot.send_message(chat_id=chat_id, text=result)
-    await context.bot.send_message(chat_id=chat_id, text="✅ Scan selesai")
+    try:
+        await context.bot.send_message(chat_id=chat_id, text="🤖 Auto scan mulai...")
+        result = scan_market()
+        await context.bot.send_message(chat_id=chat_id, text=result)
+        await context.bot.send_message(chat_id=chat_id, text="✅ Scan selesai")
+    except Exception as e:
+        print(f"Error in auto_scan: {e}")
+        await context.bot.send_message(chat_id=chat_id, text=f"❌ Error: {str(e)}")
 
 # =========================
 # MAIN
@@ -168,7 +204,7 @@ def main():
     app.add_handler(CommandHandler("scan", scan_now))
 
     # schedule jam 9 pagi
-    app.job_queue.run_daily(auto_scan, time=time(hour=9, minute=0))
+    app.job_queue.run_daily(auto_scan, time=datetime_time(hour=9, minute=0))
 
     print("BOT JALAN 🔥")
     app.run_polling()
