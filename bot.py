@@ -2,12 +2,19 @@ import yfinance as yf
 import pandas as pd
 import requests
 from io import StringIO
-from telegram import Bot
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import os
 import time
+import asyncio
 
 # =========================
-# AMBIL LIST SAHAM IDX
+# GLOBAL STATE
+# =========================
+BOT_ACTIVE = True
+
+# =========================
+# AMBIL SAHAM IDX
 # =========================
 def get_all_idx_stocks():
     url = "https://www.idx.co.id/Portals/0/StaticData/ListedCompanies/StockCode/StockCode.csv"
@@ -18,32 +25,14 @@ def get_all_idx_stocks():
         df = pd.read_csv(StringIO(res.text))
         symbols = df['Kode Saham'].dropna().tolist()
         return [f"{s}.JK" for s in symbols if isinstance(s, str)]
-    except Exception as e:
-        print("Gagal ambil IDX:", e)
-        return ["BBRI.JK", "BBCA.JK", "TLKM.JK"]  # fallback
+    except:
+        return ["BBRI.JK", "BBCA.JK", "TLKM.JK"]
 
 # =========================
-# MAIN
+# SCAN LOGIC
 # =========================
-def main():
-    TOKEN = os.getenv("8664485004:AAGwuuhlBw3ddkUIpM13OyO9bInJb7OORmQ")
-    CHAT_ID = os.getenv("6214324961")
-
-    if not TOKEN or not CHAT_ID:
-        print("TOKEN / CHAT_ID belum diset")
-        return
-
-    bot = Bot(token=TOKEN)
-
-    # 🔥 NOTIF BOT HIDUP
-    try:
-        bot.send_message(chat_id=CHAT_ID, text="🤖 Bot aktif & mulai scan...")
-    except Exception as e:
-        print("Gagal kirim status awal:", e)
-
+def scan_market():
     stocks = get_all_idx_stocks()
-    print(f"Scan {len(stocks)} saham...")
-
     results = []
 
     for symbol in stocks:
@@ -62,7 +51,6 @@ def main():
 
             volume = latest['Volume']
             value = latest['Close'] * volume
-
             high = latest['High']
             close = latest['Close']
 
@@ -71,9 +59,6 @@ def main():
 
             close_position = close / high
 
-            # =========================
-            # SCORING
-            # =========================
             score = 0
 
             if 1 <= change_pct <= 4:
@@ -95,7 +80,6 @@ def main():
             if close_position >= 0.8:
                 score += 2
 
-            # FILTER KETAT
             if score < 4:
                 continue
 
@@ -109,19 +93,13 @@ def main():
                 "label": label
             })
 
-            time.sleep(0.3)  # anti limit
+            time.sleep(0.2)
 
-        except Exception:
+        except:
             continue
 
-    # =========================
-    # SORT
-    # =========================
     results = sorted(results, key=lambda x: x['score'], reverse=True)
 
-    # =========================
-    # FORMAT MESSAGE
-    # =========================
     message = "📊 BPJS ALL MARKET\n\n"
 
     if len(results) == 0:
@@ -129,24 +107,70 @@ def main():
     else:
         for r in results[:7]:
             message += f"{r['label']} {r['symbol']}\n"
-            message += f"Score: {r['score']} | {r['change']}% | Vol {r['volume_ratio']}x\n\n"
+            message += f"{r['change']}% | Vol {r['volume_ratio']}x\n\n"
 
-    # =========================
-    # KIRIM HASIL
-    # =========================
-    try:
-        bot.send_message(chat_id=CHAT_ID, text=message)
-    except Exception as e:
-        print("Gagal kirim hasil:", e)
-
-    # 🔥 NOTIF SELESAI
-    try:
-        bot.send_message(chat_id=CHAT_ID, text="✅ Scan selesai")
-    except Exception as e:
-        print("Gagal kirim status akhir:", e)
+    return message
 
 # =========================
-# RUN
+# COMMANDS
 # =========================
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global BOT_ACTIVE
+    BOT_ACTIVE = True
+    await update.message.reply_text("🟢 BOT AKTIF")
+
+async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global BOT_ACTIVE
+    BOT_ACTIVE = False
+    await update.message.reply_text("🔴 BOT DIMATIKAN")
+
+async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    state = "AKTIF 🟢" if BOT_ACTIVE else "MATI 🔴"
+    await update.message.reply_text(f"Status bot: {state}")
+
+async def test(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔥 BOT NYALA NORMAL")
+
+async def scan_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("⏳ Scan dimulai...")
+    result = scan_market()
+    await update.message.reply_text(result)
+
+# =========================
+# AUTO SCAN (09:00)
+# =========================
+async def auto_scan(context: ContextTypes.DEFAULT_TYPE):
+    global BOT_ACTIVE
+
+    if not BOT_ACTIVE:
+        return
+
+    chat_id = os.getenv("CHAT_ID")
+
+    await context.bot.send_message(chat_id=chat_id, text="🤖 Auto scan mulai...")
+    result = scan_market()
+    await context.bot.send_message(chat_id=chat_id, text=result)
+    await context.bot.send_message(chat_id=chat_id, text="✅ Scan selesai")
+
+# =========================
+# MAIN
+# =========================
+def main():
+    TOKEN = os.getenv("TOKEN")
+
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("stop", stop))
+    app.add_handler(CommandHandler("status", status))
+    app.add_handler(CommandHandler("test", test))
+    app.add_handler(CommandHandler("scan", scan_now))
+
+    # schedule jam 9 pagi
+    app.job_queue.run_daily(auto_scan, time={"hour": 9, "minute": 0})
+
+    print("BOT JALAN 🔥")
+    app.run_polling()
+
 if __name__ == "__main__":
     main()
