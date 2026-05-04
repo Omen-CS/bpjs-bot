@@ -43,10 +43,6 @@ def scan_market():
             if len(data) < 5:
                 continue
 
-            if data.empty:
-    print("DATA KOSONG:", symbol)
-    continue
-
             latest = data.iloc[-1]
             prev = data.iloc[-2]
 
