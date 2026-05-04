@@ -6,6 +6,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import os
 import time
+from datetime import time
 import asyncio
 
 # =========================
@@ -167,7 +168,7 @@ def main():
     app.add_handler(CommandHandler("scan", scan_now))
 
     # schedule jam 9 pagi
-    app.job_queue.run_daily(auto_scan, time={"hour": 9, "minute": 0})
+    app.job_queue.run_daily(auto_scan, time=time(hour=9, minute=0))
 
     print("BOT JALAN 🔥")
     app.run_polling()
