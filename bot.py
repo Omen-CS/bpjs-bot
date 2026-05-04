@@ -11,6 +11,7 @@ import yfinance as yf
 # GLOBAL STATE
 # =========================
 BOT_ACTIVE = True
+ALPHA_VANTAGE_KEY = os.getenv("ALPHA_VANTAGE_API_KEY", "")
 
 # =========================
 # GET ALL IDX STOCKS - FALLBACK LIST
@@ -18,52 +19,17 @@ BOT_ACTIVE = True
 def get_all_idx_stocks():
     """Coba ambil dari CSV, kalau gagal pake fallback list"""
     
-    # Fallback list - saham IDX populer + mid-cap
+    # Fallback list - saham IDX populer
     fallback_stocks = [
-        "AALI", "ADRO", "ASII", "ASRI", "ASSA", "AUTO", "BBCA", "BBKP", "BBRI", "BBTN",
-        "BCAP", "BCIC", "BDMN", "BENJ", "BIMP", "BKSL", "BMAS", "BMTR", "BNBA", "BNGA",
-        "BNLI", "BPPT", "BRAU", "BRPT", "BSDE", "BTEL", "BULL", "BUMI", "CAKK", "CASS",
-        "CENT", "CITA", "CMNP", "CMPP", "CMTX", "CNKO", "CNMA", "CPIN", "CTRA", "CTRS",
-        "DADA", "DART", "DBIT", "DBRK", "DCII", "DEHP", "DEWA", "DEXA", "DFAM", "DGIK",
-        "DGIN", "DHPP", "DIDI", "DISK", "DIVA", "DKFT", "DPLM", "DSSA",
-        "DUTI", "DVLA", "DWGL", "ECII", "ECIP", "EDDY", "EKAD", "ELKO", "ELSA", "ELTY",
-        "EMTK", "ENRG", "ENSO", "ENVY", "EPMT", "EPRO", "ERAA", "ERTX", "ESIP", "ESSA",
-        "ESSM", "ESTL", "ETIC", "EULN", "EVAN", "EXCL", "EXIM", "EXIT", "EXTB", "FAPA",
-        "FASW", "FBNS", "FBSL", "FCAP", "FCED", "FERI", "FIRE", "FISH", "FITT", "FKLI",
-        "FLMA", "FLOW", "FLSP", "FMII", "FMPI", "FNSH", "FOOD", "FORE", "FPNI", "FRED",
-        "FRIP", "FRSH", "FUEL", "FUJI", "GAIL", "GAIN", "GAMC", "GAMI", "GBLA", "GBRO",
-        "GBTS", "GCAP", "GDYR", "GEMA", "GEND", "GENI", "GENM", "GERY", "GEST", "GFDU",
-        "GFLD", "GGRM", "GHON", "GHPP", "GIAA", "GIDA", "GIGA", "GIKK", "GILM", "GINN",
-        "GIPS", "GIPT", "GIRD", "GIRF", "GMCC", "GMTD", "GMTN", "GNAP", "GNFI", "GNSA",
-        "GNSI", "GNSR", "GNUT", "GOLD", "GOLF", "GONE", "GOOD", "GORO", "GOWN", "GPRA",
-        "GPSO", "GRAI", "GRAN", "GRHA", "GRIM", "GRNQ", "GRSI", "GRYA", "GSMF",
-        "GTBO", "GTMA", "GTSI", "GTSM", "GTTS", "GUHA", "GUID", "GUNA", "GUNP", "GUST",
-        "HAKA", "HAKT", "HALF", "HALO", "HALT", "HAMA", "HAMR", "HAND", "HANG", "HAPI",
-        "INAF", "INAI", "INAP", "INCA", "INCF", "INCO", "INDF", "INDI", "INDX", "INDY",
-        "INET", "INFA", "INFO", "INGA", "INGF", "INGH", "INGI", "INGP", "INGR", "INGS",
-        "JPFA", "JRPT", "KAEF", "KAIR", "KKGI", "KLBF", "KMTR", "KOBX", "KOIN", "LPKR",
-        "LPPF", "LSIP", "LTCM", "LTLN", "MAIN", "MAPC", "MAPA", "MAPB", "MAPS", "MARA",
-        "MARK", "MAUN", "MAYA", "MBSS", "MCAS", "MCOL", "MCPP", "MCSM", "MDKA", "MDLN",
-        "MDRN", "MEDC", "MEDH", "MEKA", "MELI", "MERK", "MFIN", "MGRO", "MIFA", "MIFX",
-        "MIKA", "MIKB", "MIKC", "MIKD", "MIKE", "MIKI", "MIKJ", "MIKK", "MIKL", "MIKM",
-        "MIKN", "MIKO", "MIKP", "MIKS", "MIKT", "MIKU", "MIKV", "MIKW", "MIKX", "MIKY",
-        "MIKZ", "MINA", "MINB", "MINC", "MIND", "MINE", "MINF", "MING", "MINH", "MINI",
-        "MINJ", "MINK", "MINL", "MINM", "MINN", "MINO", "MINP", "MINS", "MINT", "MINU",
-        "MINV", "MINW", "MINX", "MINY", "MINZ", "MIPA", "MIPB", "MIPC", "MIPD", "MIPE",
-        "MIPF", "MIPG", "MIPH", "MIPI", "MIPJ", "MIPK", "MIPL", "MIPM", "MIPN", "MIPO",
-        "MIPP", "MIPS", "MIPT", "MIPU", "MIPV", "MIPW", "MIPX", "MIPY", "MIPZ", "MIRB",
-        "MITA", "MITB", "MITC", "MITD", "MITE", "MITF", "MITG", "MITH", "MITI", "MITJ",
-        "MITK", "MITL", "MITM", "MITN", "MITO", "MITP", "MITS", "MITT", "MITU", "MITV",
-        "MITW", "MITX", "MITY", "MITZ", "MKPI", "MKWS", "MLPL", "MMLP", "MNEG", "MNIK",
-        "MNSE", "MOIL", "MOLI", "MONK", "MONS", "MOPC", "MOPI", "MORO", "MORR", "MOST",
-        "MOTB", "MOTI", "MOTO", "MOTP", "MOTS", "MOTT", "MOTU", "MOTV", "MOTW", "MOTX",
-        "MOTY", "MOTZ", "MOVE", "MOWS", "MOXC", "MOXD", "MOXA", "MOXB", "MOXI", "MOXP",
-        "MOXX", "MOYE", "MOYO", "MOYP", "MOYS", "MOYT", "MOYU", "MOYV", "MOYW", "MOYX",
-        "MOYY", "MOYZ", "MPRO", "MRAT", "MRLN", "MRNA", "MRNY", "MROR", "MRSA", "MRSD",
-        "MRSE", "MRSF", "MRSG", "MRSH", "MRSI", "MRSJ", "MRSK", "MRSL", "MRSM", "MRSN",
-        "MRSO", "MRSP", "MRSS", "MRST", "MRSU", "MRSV", "MRSW", "MRSX", "MRSY", "MRSZ",
-        "MTDL", "MTEM", "MTFB", "MTFP", "MTLC", "MTLA", "MTLN", "MTLP", "MTLS", "MTLT",
-        "MTLU", "MTLV", "MTLW", "MTLX", "MTLY", "MTLZ", "MTOM", "MTPS", "MTTR", "MTSM",
+        "BBRI", "BBCA", "TLKM", "ASII", "UNVR", "INDF", "GGRM", "HMSP", "JSMR", "LPKR",
+        "PGAS", "PTBA", "SMGR", "TINS", "WIKA", "ADRO", "BMTR", "BRPT", "CTRA", "EXCL",
+        "INTP", "ITMG", "JRPT", "KLBF", "MNCN", "PJAA", "PTPP", "TOWR", "ANTM", "BSDE",
+        "CPIN", "DOID", "ELSA", "EMTK", "ENRG", "ERTX", "GOLD", "HRUM", "IMAS", "MEDC",
+        "META", "MIDI", "MIKA", "MTEL", "MYOR", "NICK", "PADS", "PRAS", "ROTI", "SCMA",
+        "SIDO", "SMBR", "SMCB", "SMFR", "SMMR", "SMMA", "SMRA", "SSMS", "SSTM", "TIRA",
+        "TKIM", "TPII", "TPTP", "TRAM", "TRIM", "TRST", "TSPC", "UNTR", "UUUU", "VIVA",
+        "WAON", "WIKA", "WINS", "WTON", "XCBF", "XCBK", "XFIN", "XKSI", "XPRO", "XSLS",
+        "YULE", "ZBRA", "ZIGF", "ZMAG", "ZRPT"
     ]
     
     # Try to get dari CSV
@@ -81,6 +47,54 @@ def get_all_idx_stocks():
         return fallback_stocks
 
 # =========================
+# GET DATA FROM ALPHA VANTAGE
+# =========================
+def get_stock_data_av(symbol):
+    """Get data dari Alpha Vantage"""
+    if not ALPHA_VANTAGE_KEY:
+        return None
+    
+    try:
+        url = f"https://www.alphavantage.co/query"
+        params = {
+            "function": "TIME_SERIES_DAILY",
+            "symbol": f"{symbol}.JK",
+            "apikey": ALPHA_VANTAGE_KEY,
+            "outputsize": "compact"
+        }
+        
+        res = requests.get(url, params=params, timeout=10)
+        data = res.json()
+        
+        if "Error Message" in data or "Note" in data:
+            return None
+        
+        if "Time Series (Daily)" not in data:
+            return None
+        
+        ts = data["Time Series (Daily)"]
+        dates = sorted(ts.keys())[-30:]  # Last 30 days
+        
+        prices = []
+        volumes = []
+        highs = []
+        
+        for date in dates:
+            prices.append(float(ts[date]["4. close"]))
+            volumes.append(float(ts[date]["5. volume"]))
+            highs.append(float(ts[date]["2. high"]))
+        
+        return {
+            "prices": prices,
+            "volumes": volumes,
+            "highs": highs,
+            "dates": dates
+        }
+    except Exception as e:
+        print(f"AV Error {symbol}: {str(e)[:50]}")
+        return None
+
+# =========================
 # SCAN LOGIC
 # =========================
 def scan_market(limit=None):
@@ -91,100 +105,93 @@ def scan_market(limit=None):
     results = []
     
     print(f"\n{'='*60}")
-    print(f"🔍 SCANNING {len(stocks)} STOCKS")
+    print(f"🔍 SCANNING {len(stocks)} STOCKS (Alpha Vantage)")
     print(f"{'='*60}\n")
 
     for idx, symbol in enumerate(stocks):
         try:
             print(f"[{idx+1}/{len(stocks)}] {symbol}...", end=" ", flush=True)
             
-            # Get data dengan .JK suffix
-            ticker_str = f"{symbol}.JK"
-            data = yf.download(ticker_str, period="30d", interval="1d", progress=False, timeout=10)
-
-            if len(data) < 5:
-                print(f"❌ Tidak cukup data")
-                continue
-
-            latest = data.iloc[-1]
-            prev = data.iloc[-2]
-
-            change_pct = ((latest['Close'] - prev['Close']) / prev['Close']) * 100
-            current_price = latest['Close']
-            volume = latest['Volume']
-            high = latest['High']
+            # Get data dari Alpha Vantage
+            data = get_stock_data_av(symbol)
             
-            ma20 = data['Close'].rolling(20).mean().iloc[-1]
-            vol_ma20 = data['Volume'].rolling(20).mean().iloc[-1]
-
-            if high == 0 or current_price == 0:
-                print(f"❌ Invalid")
+            if not data or len(data["prices"]) < 5:
+                print(f"❌ No data")
                 continue
-
-            close_position = current_price / high
-
-            # ADJUSTED SCORING - LEBIH LENIENT
+            
+            prices = data["prices"]
+            volumes = data["volumes"]
+            highs = data["highs"]
+            
+            latest_price = prices[-1]
+            prev_price = prices[-2]
+            current_volume = volumes[-1]
+            current_high = highs[-1]
+            
+            change_pct = ((latest_price - prev_price) / prev_price) * 100
+            
+            ma20 = sum(prices[-20:]) / min(20, len(prices))
+            vol_ma20 = sum(volumes[-20:]) / min(20, len(volumes))
+            
+            close_position = latest_price / current_high if current_high > 0 else 0
+            
+            # SCORING
             score = 0
             
-            # Base score: jika volume bagus
-            if volume > vol_ma20 * 0.8:  # Kurang dari 1.5x
+            if current_volume > vol_ma20 * 0.8:
                 score += 1
             
-            # Score: Closing position >= 70% (turun dari 80%)
             if close_position >= 0.7:
                 score += 1
             
-            # Score: Close > MA20 (more lenient)
-            if current_price > ma20 * 0.95:  # 95% of MA20
+            if latest_price > ma20 * 0.95:
                 score += 1
             
-            # Score: Positive change (any positive)
             if change_pct > 0:
                 score += 1
             
-            # Bonus: Strong change 1-5%
             if 1 <= change_pct <= 5:
                 score += 1
-
-            if score < 1:  # Kurang dari 1 skip
+            
+            if score < 1:
                 print(f"❌ (score {score})")
                 continue
-
+            
             label = "🔥 STRONG" if score >= 4 else "⚡ WATCH"
-
+            
             results.append({
                 "symbol": symbol,
                 "score": score,
                 "change": round(change_pct, 2),
-                "price": round(current_price, 2),
-                "volume_ratio": round(volume / vol_ma20, 2),
+                "price": round(latest_price, 2),
+                "volume_ratio": round(current_volume / vol_ma20, 2),
                 "label": label
             })
             
             print(f"✅ (score {score})")
-
+            
             time.sleep(0.2)
-
+        
         except Exception as e:
             print(f"❌ {str(e)[:30]}")
             continue
-
+    
     results = sorted(results, key=lambda x: x['score'], reverse=True)
-
+    
     print(f"\n{'='*60}")
     print(f"📊 TOTAL RESULTS: {len(results)} stocks")
     print(f"{'='*60}\n")
-
+    
     message = "📊 BPJS ALL MARKET\n"
     message += f"🕐 {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}\n\n"
-
+    
     if len(results) == 0:
         message += "❌ Ga ada saham valid hari ini"
     else:
         for r in results[:10]:
             message += f"{r['label']} {r['symbol']}\n"
             message += f"Rp {r['price']} | {r['change']:+.2f}% | Vol {r['volume_ratio']:.2f}x\n\n"
-
+    
     return message
 
 # =========================
@@ -208,7 +215,7 @@ async def test(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔥 BOT NYALA NORMAL")
 
 async def scan_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("⏳ Scan dimulai...\n⏱️ Tunggu 2-3 menit untuk semua saham")
+    await update.message.reply_text("⏳ Scan dimulai...\n⏱️ Tunggu 2-3 menit")
     result = scan_market()
     await update.message.reply_text(result)
 
@@ -218,7 +225,7 @@ async def test_sample(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(result)
 
 async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🔍 Debug mode: Checking data...\n⏱️ Tunggu 1-2 menit")
+    await update.message.reply_text("🔍 Debug mode...\n⏱️ Tunggu 1-2 menit")
     result = scan_market()
     await update.message.reply_text(result)
 
@@ -227,14 +234,14 @@ async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # =========================
 async def auto_scan(context: ContextTypes.DEFAULT_TYPE):
     global BOT_ACTIVE
-
+    
     if not BOT_ACTIVE:
         return
-
+    
     chat_id = os.getenv("CHAT_ID")
-
+    
     try:
-        await context.bot.send_message(chat_id=chat_id, text="🤖 Auto scan mulai...\n⏱️ Tunggu hasil")
+        await context.bot.send_message(chat_id=chat_id, text="🤖 Auto scan jam 9 pagi mulai...\n⏱️ Tunggu hasil")
         result = scan_market()
         await context.bot.send_message(chat_id=chat_id, text=result)
         await context.bot.send_message(chat_id=chat_id, text="✅ Scan selesai")
@@ -247,9 +254,13 @@ async def auto_scan(context: ContextTypes.DEFAULT_TYPE):
 # =========================
 def main():
     TOKEN = os.getenv("TOKEN")
-
+    
+    if not TOKEN:
+        print("❌ TOKEN not found!")
+        return
+    
     app = ApplicationBuilder().token(TOKEN).build()
-
+    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("stop", stop))
     app.add_handler(CommandHandler("status", status))
@@ -257,11 +268,11 @@ def main():
     app.add_handler(CommandHandler("scan", scan_now))
     app.add_handler(CommandHandler("test_sample", test_sample))
     app.add_handler(CommandHandler("debug", debug))
-
-    # schedule jam 9 pagi
+    
+    # Schedule jam 9 pagi
     app.job_queue.run_daily(auto_scan, time=datetime_time(hour=9, minute=0))
-
-    print("BOT JALAN 🔥")
+    
+    print("🔥 BOT JALAN - Alpha Vantage Mode")
     app.run_polling()
 
 if __name__ == "__main__":
