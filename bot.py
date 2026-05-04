@@ -6,6 +6,7 @@ from datetime import time as datetime_time
 import os
 import time
 import asyncio
+import json
 
 # =========================
 # GLOBAL STATE
@@ -23,73 +24,98 @@ def get_all_idx_stocks():
         res = requests.get(url, headers=headers, timeout=10)
         df = pd.read_csv(res.text)
         symbols = df['Kode Saham'].dropna().tolist()
-        return [s.strip() for s in symbols if isinstance(s, str)]
+        return [s.strip() for s in symbols if isinstance(s, str)][:20]  # Limit 20 for testing
     except Exception as e:
         print(f"Error getting IDX stocks: {e}")
-        return ["BBRI", "BBCA", "TLKM"]
+        return ["BBRI", "BBCA", "TLKM", "ASII", "UNVR"]
 
 # =========================
 # GET DATA FROM STOCKBIT
 # =========================
 def get_stockbit_data(symbol):
-    """Ambil data dari Stockbit API"""
+    """Ambil data dari Stockbit API - menggunakan endpoint yang berbeda"""
     try:
-        url = f"https://stockbit.com/api/v2/stock/{symbol}"
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-        return data
+        # Try endpoint 1: /api/v2/stock/{symbol}
+        url = f"https://api.stockbit.com/v2/stocks/{symbol}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json"
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"DEBUG {symbol}: {json.dumps(data, indent=2)[:200]}")
+            return data
+        else:
+            print(f"Error {symbol}: HTTP {response.status_code}")
+            return None
+            
     except Exception as e:
         print(f"Error fetching {symbol} from Stockbit: {e}")
         return None
 
-def get_stockbit_technical(symbol):
-    """Ambil data technical dari Stockbit"""
+# =========================
+# ALTERNATIVE: YahooFinance dengan Fallback
+# =========================
+def get_stock_data_fallback(symbol):
+    """Fallback ke Yahoo Finance jika Stockbit gagal"""
     try:
-        url = f"https://stockbit.com/api/v2/stock/{symbol}/technical"
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-        return data
+        import yfinance as yf
+        ticker = yf.Ticker(f"{symbol}.JK")
+        hist = ticker.history(period="5d")
+        
+        if len(hist) < 2:
+            return None
+            
+        latest = hist.iloc[-1]
+        prev = hist.iloc[-2]
+        
+        change_pct = ((latest['Close'] - prev['Close']) / prev['Close']) * 100
+        current_price = latest['Close']
+        volume = latest['Volume']
+        
+        return {
+            "change": round(change_pct, 2),
+            "price": round(current_price, 2),
+            "volume": volume
+        }
     except Exception as e:
-        print(f"Error fetching technical {symbol}: {e}")
+        print(f"Fallback error for {symbol}: {e}")
         return None
 
 # =========================
-# SCAN LOGIC (STOCKBIT)
+# SCAN LOGIC
 # =========================
 def scan_market():
     stocks = get_all_idx_stocks()
     results = []
+    
+    print(f"\n🔍 Scanning {len(stocks)} stocks...\n")
 
-    for symbol in stocks:
+    for idx, symbol in enumerate(stocks):
         try:
-            # Get basic data
+            print(f"[{idx+1}/{len(stocks)}] Checking {symbol}...")
+            
+            # Try Stockbit first
             data = get_stockbit_data(symbol)
+            
+            # Fallback to Yahoo Finance
             if not data:
+                print(f"  → Fallback to Yahoo Finance for {symbol}")
+                data = get_stock_data_fallback(symbol)
+            
+            if not data:
+                print(f"  → Skipped (no data)")
                 continue
 
-            # Get technical data
-            tech = get_stockbit_technical(symbol)
-
             # Extract data
-            price = data.get('price', {})
-            change_pct = price.get('change', 0)
-            current_price = price.get('current', 0)
+            change_pct = data.get('change', 0)
+            current_price = data.get('price', 0)
             
             if current_price == 0:
                 continue
-
-            volume = data.get('volume', 0)
-            market_cap = data.get('market_cap', 0)
-
-            # Get technical indicators
-            ma20 = None
-            rsi = None
-            if tech:
-                indicators = tech.get('indicators', {})
-                ma20 = indicators.get('ma20')
-                rsi = indicators.get('rsi')
 
             score = 0
 
@@ -98,36 +124,32 @@ def scan_market():
                 score += 2
             elif change_pct > 5:
                 score -= 2
-
-            if ma20 and current_price > ma20:
+            
+            if change_pct > 0:
                 score += 1
 
-            if volume > 0:
+            if current_price > 1000:
                 score += 1
-
-            if market_cap > 3_000_000_000:  # 3 miliar
-                score += 1
-
-            if rsi and 40 <= rsi <= 70:
-                score += 2
 
             if score < 0:
                 continue
 
-            label = "🔥 STRONG" if score >= 6 else "⚡ WATCH"
+            label = "🔥 STRONG" if score >= 5 else "⚡ WATCH"
 
             results.append({
                 "symbol": symbol,
                 "score": score,
-                "change": round(change_pct, 2),
-                "price": round(current_price, 2),
+                "change": change_pct,
+                "price": current_price,
                 "label": label
             })
+            
+            print(f"  ✓ Added to results (score: {score})")
 
-            time.sleep(0.3)
+            time.sleep(0.2)
 
         except Exception as e:
-            print(f"Error scanning {symbol}: {e}")
+            print(f"  ✗ Error scanning {symbol}: {e}")
             continue
 
     results = sorted(results, key=lambda x: x['score'], reverse=True)
@@ -138,9 +160,10 @@ def scan_market():
     if len(results) == 0:
         message += "❌ Ga ada saham valid hari ini"
     else:
+        message += f"✅ Found {len(results)} valid stocks\n\n"
         for r in results[:7]:
             message += f"{r['label']} {r['symbol']}\n"
-            message += f"Rp {r['price']} | {r['change']}%\n\n"
+            message += f"Rp {r['price']} | {r['change']:+.2f}%\n\n"
 
     return message
 
@@ -165,7 +188,7 @@ async def test(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔥 BOT NYALA NORMAL")
 
 async def scan_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("⏳ Scan dimulai...")
+    await update.message.reply_text("⏳ Scan dimulai...\n(Silahkan tunggu 30-60 detik)")
     result = scan_market()
     await update.message.reply_text(result)
 
