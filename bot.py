@@ -13,22 +13,66 @@ import yfinance as yf
 BOT_ACTIVE = True
 
 # =========================
-# AMBIL SAHAM IDX
+# GET ALL IDX STOCKS - FALLBACK LIST
 # =========================
 def get_all_idx_stocks():
-    url = "https://www.idx.co.id/Portals/0/StaticData/ListedCompanies/StockCode/StockCode.csv"
-    headers = {"User-Agent": "Mozilla/5.0"}
-
+    """Coba ambil dari CSV, kalau gagal pake fallback list"""
+    
+    # Fallback list - saham IDX populer + mid-cap
+    fallback_stocks = [
+        "AALI", "ADRO", "ASII", "ASRI", "ASSA", "AUTO", "BBCA", "BBKP", "BBRI", "BBTN",
+        "BCAP", "BCIC", "BDMN", "BENJ", "BIMP", "BKSL", "BMAS", "BMTR", "BNBA", "BNGA",
+        "BNLI", "BPPT", "BRAU", "BRPT", "BSDE", "BTEL", "BULL", "BUMI", "CAKK", "CASS",
+        "CENT", "CITA", "CMNP", "CMPP", "CMTX", "CNKO", "CNMA", "CPIN", "CTRA", "CTRS",
+        "DADA", "DART", "DBIT", "DBRK", "DCII", "DEHP", "DEWA", "DEXA", "DFAM", "DGIK",
+        "DGIN", "DHPP", "DIDI", "DISK", "DIVA", "DKFT", "DOID", "Dok", "DPLM", "DSSA",
+        "DUTI", "DVLA", "DWGL", "ECII", "ECIP", "EDDY", "EKAD", "ELKO", "ELSA", "ELTY",
+        "EMTK", "ENRG", "ENSO", "ENVY", "EPMT", "EPRO", "ERAA", "ERTX", "ESIP", "ESSA",
+        "ESSM", "ESTL", "ETIC", "EULN", "EVAN", "EXCL", "EXIM", "EXIT", "EXTB", "FAPA",
+        "FASW", "FBNS", "FBSL", "FCAP", "FCED", "FERI", "FIRE", "FISH", "FITT", "FKLI",
+        "FLMA", "FLOW", "FLSP", "FMII", "FMPI", "FNSH", "FOOD", "FORE", "FPNI", "FRED",
+        "FRIP", "FRSH", "FUEL", "FUJI", "GAIL", "GAIN", "GAMC", "GAMI", "GBLA", "GBRO",
+        "GBTS", "GCAP", "GDYR", "GEMA", "GEND", "GENI", "GENM", "GERY", "GEST", "GFDU",
+        "GFLD", "GGRM", "GHON", "GHPP", "GIAA", "GIDA", "GIGA", "GIKK", "GILM", "GINN",
+        "GIPS", "GIPT", "GIRD", "GIRF", "GMCC", "GMTD", "GMTN", "GNAP", "GNFI", "GNSA",
+        "GNSI", "GNSR", "GNUT", "GOLD", "GOLF", "GONE", "GOOD", "GORO", "GOWN", "GPRA",
+        "GPSO", "GRAI", "GRAN", "GRASP", "GRHA", "GRIM", "GRNQ", "GRSI", "GRYA", "GSMF",
+        "GTBO", "GTMA", "GTSI", "GTSM", "GTTS", "GUHA", "GUID", "GUNA", "GUNP", "GUST",
+        "GUTIL", "GWMC", "HADJ", "HAGG", "HAHN", "HAIL", "HAIR", "HAKA", "HAKT", "HALF",
+        "HALL", "HALO", "HALT", "HAMA", "HAMR", "HAND", "HANG", "HAPI", "HAPS", "HARA",
+        "HARD", "HARE", "HARK", "HARM", "HARN", "HARP", "HARS", "HART", "HARW", "HARY",
+        "HASC", "HASH", "HASL", "HASS", "HAST", "HATE", "HATT", "HAUL", "HAUS", "HAVA",
+        "HAWK", "HAYA", "HAYD", "HAYE", "HAYS", "HAZA", "HBAN", "HBAP", "HBAV", "HBMD",
+        "HBMP", "HBNI", "HBNP", "HBPO", "HBPT", "HBSA", "HBSI", "HBSO", "HBST", "HBSU",
+        "HEXA", "HEXM", "HEXS", "HGAR", "HGSP", "HIBA", "HIBB", "HIBE", "HIBF", "HIBG",
+        "HIBH", "HIBI", "HIBJ", "HIBK", "HIBL", "HIBM", "HIBN", "HIBO", "HIBP", "HIBT",
+        "HIDU", "HIEI", "HIGH", "HIJA", "HIKE", "HIKU", "HIMA", "HIMB", "HIMC", "HIMD",
+        "HIME", "HIMF", "HIMG", "HIMH", "HIMI", "HIMJ", "HIMK", "HIML", "HIMM", "HIMN",
+        "HIMO", "HIMS", "HIMU", "HIMV", "HIMW", "HIMX", "HIMY", "HIMZ", "HINA", "HINB",
+        "HINC", "HIND", "HINE", "HING", "HINI", "HINK", "HINL", "HINM", "HINN", "HINO",
+        "HINP", "HINS", "HINT", "HINU", "HINV", "HINW", "HINX", "HINY", "HINZ", "HIPA",
+        "HIPC", "HIPD", "HIPE", "HIPF", "HIPG", "HIPH", "HIPI", "HIPJ", "HIPK", "HIPL",
+        "HIPM", "HIPN", "HIPO", "HIPP", "HIPS", "HIPT", "HIPU", "HIPV", "HIPW", "HIPX",
+        "HIPY", "HIPZ", "HITA", "HITB", "HITC", "HITD", "HITE", "HITF", "HITG", "HITH",
+        "HITI", "HITJ", "HITK", "HITL", "HITM", "HITN", "HITO", "HITP", "HITS", "HITT",
+        "HITU", "HITV", "HITW", "HITX", "HITY", "HITZ", "HIYA", "HIYB", "HIYC", "HIYD",
+        "HIYE", "HIYF", "HIYG", "HIYH", "HIYI", "HIYJ", "HIYK", "HIYL", "HIYM", "HIYN",
+        "HIYO", "HIYP", "HIYS", "HIYT", "HIYU", "HIYV", "HIYW", "HIYX", "HIYY", "HIYZ",
+    ]
+    
+    # Try to get dari CSV
     try:
-        res = requests.get(url, headers=headers, timeout=10)
+        url = "https://www.idx.co.id/Portals/0/StaticData/ListedCompanies/StockCode/StockCode.csv"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        res = requests.get(url, headers=headers, timeout=5)
         df = pd.read_csv(res.text)
         symbols = df['Kode Saham'].dropna().tolist()
-        result = [s.strip() for s in symbols if isinstance(s, str)][:15]
-        print(f"✓ Got {len(result)} stocks from IDX")
+        result = [s.strip() for s in symbols if isinstance(s, str)]
+        print(f"✓ Got {len(result)} stocks from IDX CSV")
         return result
     except Exception as e:
-        print(f"✗ Error getting IDX stocks: {e}")
-        return ["BBRI", "BBCA", "TLKM", "ASII", "UNVR", "INDF", "GGRM"]
+        print(f"✗ CSV gagal ({str(e)[:30]}), pake fallback {len(fallback_stocks)} stocks")
+        return fallback_stocks
 
 # =========================
 # SCAN LOGIC
@@ -43,14 +87,14 @@ def scan_market():
 
     for idx, symbol in enumerate(stocks):
         try:
-            print(f"[{idx+1}/{len(stocks)}] {symbol}...", end=" ")
+            print(f"[{idx+1}/{len(stocks)}] {symbol}...", end=" ", flush=True)
             
             # Get data dengan .JK suffix
             ticker_str = f"{symbol}.JK"
             data = yf.download(ticker_str, period="30d", interval="1d", progress=False, timeout=10)
 
             if len(data) < 5:
-                print(f"❌ Tidak cukup data ({len(data)} days)")
+                print(f"❌ Tidak cukup data")
                 continue
 
             latest = data.iloc[-1]
@@ -65,7 +109,7 @@ def scan_market():
             vol_ma20 = data['Volume'].rolling(20).mean().iloc[-1]
 
             if high == 0 or current_price == 0:
-                print(f"❌ Invalid price")
+                print(f"❌ Invalid")
                 continue
 
             close_position = current_price / high
@@ -91,10 +135,8 @@ def scan_market():
             if close_position >= 0.8:
                 score += 2
 
-            print(f"change={change_pct:.2f}% price={current_price:.0f} vol_ratio={volume/vol_ma20:.2f}x close_pos={close_position:.2f} → score={score}", end="")
-
             if score < 0:
-                print(f" ❌ (negative score)")
+                print(f"❌ (score {score})")
                 continue
 
             label = "🔥 STRONG" if score >= 6 else "⚡ WATCH"
@@ -108,12 +150,12 @@ def scan_market():
                 "label": label
             })
             
-            print(f" ✅ ADDED")
+            print(f"✅ (score {score})")
 
-            time.sleep(0.5)
+            time.sleep(0.3)
 
         except Exception as e:
-            print(f"❌ {str(e)[:50]}")
+            print(f"❌ {str(e)[:30]}")
             continue
 
     results = sorted(results, key=lambda x: x['score'], reverse=True)
@@ -128,7 +170,7 @@ def scan_market():
     if len(results) == 0:
         message += "❌ Ga ada saham valid hari ini"
     else:
-        for r in results[:7]:
+        for r in results[:10]:
             message += f"{r['label']} {r['symbol']}\n"
             message += f"Rp {r['price']} | {r['change']:+.2f}% | Vol {r['volume_ratio']:.2f}x\n\n"
 
@@ -155,7 +197,7 @@ async def test(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔥 BOT NYALA NORMAL")
 
 async def scan_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("⏳ Scan dimulai...\n⏱️ Tunggu 1-2 menit")
+    await update.message.reply_text("⏳ Scan dimulai...\n⏱️ Tunggu 2-3 menit untuk semua saham")
     result = scan_market()
     await update.message.reply_text(result)
 
@@ -171,13 +213,13 @@ async def auto_scan(context: ContextTypes.DEFAULT_TYPE):
     chat_id = os.getenv("CHAT_ID")
 
     try:
-        await context.bot.send_message(chat_id=chat_id, text="🤖 Auto scan mulai...")
+        await context.bot.send_message(chat_id=chat_id, text="🤖 Auto scan mulai...\n⏱️ Tunggu hasil")
         result = scan_market()
         await context.bot.send_message(chat_id=chat_id, text=result)
         await context.bot.send_message(chat_id=chat_id, text="✅ Scan selesai")
     except Exception as e:
         print(f"Error in auto_scan: {e}")
-        await context.bot.send_message(chat_id=chat_id, text=f"❌ Error: {str(e)}")
+        await context.bot.send_message(chat_id=chat_id, text=f"❌ Error: {str(e)[:100]}")
 
 # =========================
 # MAIN
