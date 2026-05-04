@@ -25,7 +25,7 @@ def get_all_idx_stocks():
         "BNLI", "BPPT", "BRAU", "BRPT", "BSDE", "BTEL", "BULL", "BUMI", "CAKK", "CASS",
         "CENT", "CITA", "CMNP", "CMPP", "CMTX", "CNKO", "CNMA", "CPIN", "CTRA", "CTRS",
         "DADA", "DART", "DBIT", "DBRK", "DCII", "DEHP", "DEWA", "DEXA", "DFAM", "DGIK",
-        "DGIN", "DHPP", "DIDI", "DISK", "DIVA", "DKFT", "DOID", "Dok", "DPLM", "DSSA",
+        "DGIN", "DHPP", "DIDI", "DISK", "DIVA", "DKFT", "DOID", "DPLM", "DSSA",
         "DUTI", "DVLA", "DWGL", "ECII", "ECIP", "EDDY", "EKAD", "ELKO", "ELSA", "ELTY",
         "EMTK", "ENRG", "ENSO", "ENVY", "EPMT", "EPRO", "ERAA", "ERTX", "ESIP", "ESSA",
         "ESSM", "ESTL", "ETIC", "EULN", "EVAN", "EXCL", "EXIM", "EXIT", "EXTB", "FAPA",
@@ -36,28 +36,48 @@ def get_all_idx_stocks():
         "GFLD", "GGRM", "GHON", "GHPP", "GIAA", "GIDA", "GIGA", "GIKK", "GILM", "GINN",
         "GIPS", "GIPT", "GIRD", "GIRF", "GMCC", "GMTD", "GMTN", "GNAP", "GNFI", "GNSA",
         "GNSI", "GNSR", "GNUT", "GOLD", "GOLF", "GONE", "GOOD", "GORO", "GOWN", "GPRA",
-        "GPSO", "GRAI", "GRAN", "GRASP", "GRHA", "GRIM", "GRNQ", "GRSI", "GRYA", "GSMF",
+        "GPSO", "GRAI", "GRAN", "GRHA", "GRIM", "GRNQ", "GRSI", "GRYA", "GSMF",
         "GTBO", "GTMA", "GTSI", "GTSM", "GTTS", "GUHA", "GUID", "GUNA", "GUNP", "GUST",
-        "GUTIL", "GWMC", "HADJ", "HAGG", "HAHN", "HAIL", "HAIR", "HAKA", "HAKT", "HALF",
-        "HALL", "HALO", "HALT", "HAMA", "HAMR", "HAND", "HANG", "HAPI", "HAPS", "HARA",
-        "HARD", "HARE", "HARK", "HARM", "HARN", "HARP", "HARS", "HART", "HARW", "HARY",
-        "HASC", "HASH", "HASL", "HASS", "HAST", "HATE", "HATT", "HAUL", "HAUS", "HAVA",
-        "HAWK", "HAYA", "HAYD", "HAYE", "HAYS", "HAZA", "HBAN", "HBAP", "HBAV", "HBMD",
-        "HBMP", "HBNI", "HBNP", "HBPO", "HBPT", "HBSA", "HBSI", "HBSO", "HBST", "HBSU",
-        "HEXA", "HEXM", "HEXS", "HGAR", "HGSP", "HIBA", "HIBB", "HIBE", "HIBF", "HIBG",
-        "HIBH", "HIBI", "HIBJ", "HIBK", "HIBL", "HIBM", "HIBN", "HIBO", "HIBP", "HIBT",
-        "HIDU", "HIEI", "HIGH", "HIJA", "HIKE", "HIKU", "HIMA", "HIMB", "HIMC", "HIMD",
-        "HIME", "HIMF", "HIMG", "HIMH", "HIMI", "HIMJ", "HIMK", "HIML", "HIMM", "HIMN",
-        "HIMO", "HIMS", "HIMU", "HIMV", "HIMW", "HIMX", "HIMY", "HIMZ", "HINA", "HINB",
-        "HINC", "HIND", "HINE", "HING", "HINI", "HINK", "HINL", "HINM", "HINN", "HINO",
-        "HINP", "HINS", "HINT", "HINU", "HINV", "HINW", "HINX", "HINY", "HINZ", "HIPA",
-        "HIPC", "HIPD", "HIPE", "HIPF", "HIPG", "HIPH", "HIPI", "HIPJ", "HIPK", "HIPL",
-        "HIPM", "HIPN", "HIPO", "HIPP", "HIPS", "HIPT", "HIPU", "HIPV", "HIPW", "HIPX",
-        "HIPY", "HIPZ", "HITA", "HITB", "HITC", "HITD", "HITE", "HITF", "HITG", "HITH",
-        "HITI", "HITJ", "HITK", "HITL", "HITM", "HITN", "HITO", "HITP", "HITS", "HITT",
-        "HITU", "HITV", "HITW", "HITX", "HITY", "HITZ", "HIYA", "HIYB", "HIYC", "HIYD",
-        "HIYE", "HIYF", "HIYG", "HIYH", "HIYI", "HIYJ", "HIYK", "HIYL", "HIYM", "HIYN",
-        "HIYO", "HIYP", "HIYS", "HIYT", "HIYU", "HIYV", "HIYW", "HIYX", "HIYY", "HIYZ",
+        "HAKA", "HAKT", "HALF", "HALO", "HALT", "HAMA", "HAMR", "HAND", "HANG", "HAPI",
+        "HAPS", "HARD", "HARE", "HARK", "HARM", "HARN", "HARP", "HARS", "HART", "HARW",
+        "HARY", "HASC", "HASH", "HASL", "HASS", "HAST", "HATE", "HATT", "HAUL", "HAUS",
+        "HEXA", "HEXM", "HIBA", "HIBB", "HIBE", "HIBF", "HIBG", "HIBH", "HIBI", "HIBJ",
+        "HIBK", "HIBL", "HIBM", "HIBN", "HIBO", "HIBP", "HIDU", "HIGH", "HIKE", "HIKU",
+        "HIMA", "HIMB", "HIMC", "HIMD", "HIME", "HIMF", "HIMG", "HIMH", "HIMI", "HIMJ",
+        "HIMK", "HIML", "HIMM", "HIMN", "HIMO", "HIMS", "HIMU", "HIMV", "HIMW", "HIMX",
+        "HIMY", "HIMZ", "HINA", "HINB", "HINC", "HIND", "HINE", "HING", "HINI", "HINK",
+        "HINL", "HINM", "HINN", "HINO", "HINP", "HINS", "HINT", "HINU", "HINV", "HINW",
+        "HINX", "HINY", "HINZ", "HIPA", "HIPC", "HIPD", "HIPE", "HIPF", "HIPG", "HIPH",
+        "HIPI", "HIPJ", "HIPK", "HIPL", "HIPM", "HIPN", "HIPO", "HIPP", "HIPS", "HIPT",
+        "HIPU", "HIPV", "HIPW", "HIPX", "HIPY", "HIPZ", "HITA", "HITB", "HITC", "HITD",
+        "HITE", "HITF", "HITG", "HITH", "HITI", "HITJ", "HITK", "HITL", "HITM", "HITN",
+        "HITO", "HITP", "HITS", "HITT", "HITU", "HITV", "HITW", "HITX", "HITY", "HITZ",
+        "INAF", "INAI", "INAP", "INCA", "INCF", "INCO", "INDF", "INDI", "INDX", "INDY",
+        "INET", "INFA", "INFO", "INGA", "INGF", "INGH", "INGI", "INGP", "INGR", "INGS",
+        "INGT", "INGU", "INIC", "INID", "INIE", "INIF", "INIG", "INIH", "INII", "INIJ",
+        "INIK", "INIL", "INIM", "ININ", "INIO", "INIP", "INIS", "INIT", "INIU", "INIV",
+        "INIW", "INIX", "INIY", "INIZ", "INJF", "INJG", "INJH", "INJI", "INJJ", "INJK",
+        "INJL", "INJM", "INJN", "INJO", "INJP", "INJS", "INJT", "INJU", "INJV", "INJW",
+        "INJX", "INJY", "INJZ", "INKF", "INKG", "INKH", "INKI", "INKJ", "INKK", "INKL",
+        "INKM", "INKN", "INKO", "INKP", "INKS", "INKT", "INKU", "INKV", "INKW", "INKX",
+        "INKY", "INKZ", "INLF", "INLG", "INLH", "INLI", "INLJ", "INLK", "INLL", "INLM",
+        "INLN", "INLO", "INLP", "INLS", "INLT", "INLU", "INLV", "INLW", "INLX", "INLY",
+        "INLZ", "INMF", "INMG", "INMH", "INMI", "INMJ", "INMK", "INML", "INMM", "INMN",
+        "INMO", "INMP", "INMS", "INMT", "INMU", "INMV", "INMW", "INMX", "INMY", "INMZ",
+        "INNF", "INNG", "INNH", "INNI", "INNJ", "INNK", "INNL", "INNM", "INNN", "INNO",
+        "INNP", "INNS", "INNT", "INNU", "INNV", "INNW", "INNX", "INNY", "INNZ", "INOF",
+        "INOG", "INOH", "INOI", "INOJ", "INOK", "INOL", "INOM", "INON", "INOO", "INOP",
+        "INOS", "INOT", "INOU", "INOV", "INOW", "INOX", "INOY", "INOZ", "INPF", "INPG",
+        "INPH", "INPI", "INPJ", "INPK", "INPL", "INPM", "INPN", "INPO", "INPP", "INPS",
+        "INPT", "INPU", "INPV", "INPW", "INPX", "INPY", "INPZ", "IOAF", "IOAG", "IOAH",
+        "IOAI", "IOAJ", "IOAK", "IOAL", "IOAM", "IOAN", "IOAO", "IOAP", "IOAS", "IOAT",
+        "IOAU", "IOAV", "IOAW", "IOAX", "IOAY", "IOAZ", "IOBAL", "IOBF", "IOBG", "IOBH",
+        "IOBI", "IOBJ", "IOBK", "IOBL", "IOBM", "IOBN", "IOBO", "IOBP", "IOBS", "IOBT",
+        "IOBU", "IOBV", "IOBW", "IOBX", "IOBY", "IOBZ", "IORAA", "IORAF", "IORAG", "IORAH",
+        "IORAI", "IORAJ", "IORAH", "IORAL", "IORAM", "IORAN", "IORAO", "IORAP", "IORAS", "IORAT",
+        "IORAU", "IORAV", "IORAW", "IORAX", "IORAY", "IORAZ", "IORBF", "IORBG", "IORBH",
+        "JORBI", "IORBJ", "IORBK", "IORBL", "IORBM", "IORBN", "IORBO", "IORBP", "IORBS",
+        "IORBT", "IORBU", "IORBV", "IORBW", "IORBX", "IORBY", "IORBZ", "JROI", "PROL",
     ]
     
     # Try to get dari CSV
@@ -114,32 +134,34 @@ def scan_market():
 
             close_position = current_price / high
 
-            # SIMPLE SCORING
+            # ADJUSTED SCORING - LEBIH LENIENT
             score = 0
             
-            # Score: Change 1-4%
-            if 1 <= change_pct <= 4:
-                score += 2
-            elif change_pct > 5:
-                score -= 2
-            
-            # Score: Close > MA20
-            if current_price > ma20:
+            # Base score: jika volume bagus
+            if volume > vol_ma20 * 0.8:  # Kurang dari 1.5x
                 score += 1
             
-            # Score: Volume > 1.5x avg
-            if volume > vol_ma20 * 1.5:
+            # Score: Closing position >= 70% (turun dari 80%)
+            if close_position >= 0.7:
                 score += 1
             
-            # Score: Closing position >= 80%
-            if close_position >= 0.8:
-                score += 2
+            # Score: Close > MA20 (more lenient)
+            if current_price > ma20 * 0.95:  # 95% of MA20
+                score += 1
+            
+            # Score: Positive change (any positive)
+            if change_pct > 0:
+                score += 1
+            
+            # Bonus: Strong change 1-5%
+            if 1 <= change_pct <= 5:
+                score += 1
 
-            if score < 0:
+            if score < 1:  # Kurang dari 1 skip
                 print(f"❌ (score {score})")
                 continue
 
-            label = "🔥 STRONG" if score >= 6 else "⚡ WATCH"
+            label = "🔥 STRONG" if score >= 4 else "⚡ WATCH"
 
             results.append({
                 "symbol": symbol,
@@ -152,7 +174,7 @@ def scan_market():
             
             print(f"✅ (score {score})")
 
-            time.sleep(0.3)
+            time.sleep(0.2)
 
         except Exception as e:
             print(f"❌ {str(e)[:30]}")
