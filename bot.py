@@ -81,7 +81,7 @@ def scan_market():
             if close_position >= 0.8:
                 score += 2
 
-            if score < 4:
+            if score < 2:
                 continue
 
             label = "🔥 STRONG" if score >= 6 else "⚡ WATCH"
