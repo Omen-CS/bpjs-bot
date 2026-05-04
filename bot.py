@@ -40,7 +40,7 @@ def scan_market():
         try:
             data = yf.download(symbol, period="30d", interval="1d", progress=False)
 
-            if len(data) < 20:
+            if len(data) < 5:
                 continue
 
             latest = data.iloc[-1]
